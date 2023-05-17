@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">okei store</string>
+    <string name="store">Магазин</string>
+    <string name="cart">Корзина</string>
+    <string name="profile">Профиль</string>
+    <string name="phone">Телефон</string>
+    <string name="orders">Заказы</string>
+    <string name="add_for">Добавить за</string>
+    <string name="proceed_to_checkout">Перейти к оформлению заказа</string>
+    <string name="sum">Сумма</string>
+    <string name="to_come_in">Войти</string>
+</resources>
