@@ -2,14 +2,14 @@ package com.okei.store.data.repos
 
 import androidx.datastore.core.DataStore
 import com.okei.store.depen_inject.CartDataStore
-import com.okei.store.domain.repos.CartRepos
+import com.okei.store.domain.repos.CartRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class CartReposImpl @Inject constructor(
+class CartRepositoryImpl @Inject constructor(
     @CartDataStore
     private val cartDataStore: DataStore<Map<String, Int>>
-) : CartRepos {
+) : CartRepository {
     override fun getCart(): Flow<Map<String, Int>> = cartDataStore.data
     override suspend fun add(id: String) {
         cartDataStore.updateData {

@@ -28,11 +28,10 @@ import com.vk.api.sdk.auth.VKScope
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToComeInVK() {
-    val activity = LocalContext.current as ComponentActivity
     val authLauncher = LocalVkAuthLauncher.current
     ElevatedCard(
         onClick = {
-            authLauncher?.launch(arrayListOf(VKScope.WALL, VKScope.PHONE))
+            authLauncher?.launch(arrayListOf(VKScope.WALL, VKScope.PHONE, VKScope.OFFLINE))
         },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary

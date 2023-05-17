@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.okei.store.domain.model.product.ProductModel
-import com.okei.store.domain.repos.CartRepos
+import com.okei.store.domain.repos.CartRepository
 import com.okei.store.domain.repos.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val cartRepos: CartRepos,
+    private val cartRepository: CartRepository,
     private val productRepository: ProductRepository,
 ): ViewModel() {
 
@@ -48,7 +48,7 @@ class CartViewModel @Inject constructor(
     }
 
     private val subscriptionCart = viewModelScope.launch {
-        cartRepos.getCart().collect{map ->
+        cartRepository.getCart().collect{ map ->
             _cart.clear()
             _cart.putAll(map)
             val list = catalog.filter { productModel -> _cart.contains(productModel.id) }
@@ -60,7 +60,7 @@ class CartViewModel @Inject constructor(
 
     fun clearCart(){
         viewModelScope.launch {
-            cartRepos.clear()
+            cartRepository.clear()
         }
     }
     override fun onCleared() {
@@ -79,9 +79,9 @@ class CartViewModel @Inject constructor(
     fun addProductInCart(id: String, quantity: Int = 1){
         viewModelScope.launch {
             if (cart.contains(id)){
-                cartRepos.changeNum(id, cart.getOrDefault(id, 0) + quantity)
+                cartRepository.changeNum(id, cart.getOrDefault(id, 0) + quantity)
             }else{
-                cartRepos.add(id)
+                cartRepository.add(id)
             }
         }
     }
@@ -90,12 +90,12 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             val value = cart.getOrDefault(id, 0) - quantity
             if (value == 0) {
-                cartRepos.remove(id)
+                cartRepository.remove(id)
             }else if(value>0){
-                cartRepos.changeNum(id, value)
+                cartRepository.changeNum(id, value)
             }else{
                 if (cart.contains(id))
-                    cartRepos.remove(id)
+                    cartRepository.remove(id)
             }
         }
     }

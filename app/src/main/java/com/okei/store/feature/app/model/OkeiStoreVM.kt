@@ -1,5 +1,6 @@
 package com.okei.store.feature.app.model
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.okei.store.domain.repos.UserRepository
 import com.okei.store.feature.common.model.UserStateNotification

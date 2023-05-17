@@ -32,7 +32,7 @@ import com.okei.store.R
 import com.okei.store.domain.model.user.UserModel
 import com.okei.store.feature.profile.model.ProfileViewModel
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileUserView(
     viewModel: ProfileViewModel,

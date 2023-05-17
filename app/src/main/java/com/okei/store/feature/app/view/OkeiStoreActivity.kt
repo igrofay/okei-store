@@ -1,6 +1,7 @@
 package com.okei.store.feature.app.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -14,12 +15,9 @@ import com.okei.store.feature.app.model.OkeiStoreVM
 import com.okei.store.feature.common.theme.OkeiStoreTheme
 import com.okei.store.feature.nav.view.AppNav
 import com.vk.api.sdk.VK
-import com.vk.api.sdk.auth.VKAuthenticationResult
 import com.vk.api.sdk.auth.VKScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class OkeiStoreActivity : ComponentActivity() {
