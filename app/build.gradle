@@ -80,4 +80,7 @@ dependencies {
     // vk api
     implementation 'com.vk:android-sdk-core:4.0.1'
     implementation 'com.vk:android-sdk-api:4.0.1'
+    // retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0"
 }

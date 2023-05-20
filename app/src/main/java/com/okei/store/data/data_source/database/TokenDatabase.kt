@@ -11,7 +11,7 @@ class TokenDatabase @Inject constructor(
     fun getAccessToken() =
         sharedPreferences.getString("accessToken", null)
 
-    fun setAccessToken(token: String){
+    fun setAccessToken(token: String?){
         sharedPreferences.edit()
             .putString("accessToken", token)
             .apply()

@@ -28,5 +28,6 @@ class UserStateNotification @Inject constructor() {
     enum class State{
         Authorized,
         NoLongerAuthorized,
+        ErrorHasOccurred,
     }
 }

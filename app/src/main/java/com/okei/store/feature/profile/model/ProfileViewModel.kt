@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.okei.store.R
 import com.okei.store.domain.model.user.UserModel
 import com.okei.store.domain.repos.UserRepository
+import com.okei.store.domain.use_case.auth.ExitUseCase
 import com.okei.store.feature.cart.model.ProfileSideEffect
 import com.okei.store.feature.common.model.UserStateNotification
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val userStateNotification: UserStateNotification,
+    private val exitUseCase: ExitUseCase,
 ) : ViewModel() , UserStateNotification.UserStateListener{
     private val _sideEffect = Channel<ProfileSideEffect>()
     val sideEffect: Flow<ProfileSideEffect>
@@ -48,7 +50,7 @@ class ProfileViewModel @Inject constructor(
                         _state.value = UserState.UserData
                     }
                 }else{
-                    userRepository.setUserIsAuth(false)
+                    exitUseCase.execute()
                     _sideEffect.send(ProfileSideEffect.Message(R.string.error_has_occurred))
                 }
             }
@@ -64,6 +66,9 @@ class ProfileViewModel @Inject constructor(
         when(state){
             UserStateNotification.State.Authorized -> loadUser()
             UserStateNotification.State.NoLongerAuthorized -> clear()
+            UserStateNotification.State.ErrorHasOccurred -> viewModelScope.launch {
+                _sideEffect.send(ProfileSideEffect.Message(R.string.error_has_occurred))
+            }
         }
     }
 

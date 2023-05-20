@@ -1,5 +1,6 @@
 package com.okei.store.data.repos
 
+import android.util.Log
 import com.okei.store.data.data_source.api.vk.VKApi
 import com.okei.store.data.data_source.database.UserDatabase
 import com.okei.store.domain.model.user.UserModel
@@ -15,7 +16,10 @@ class UserRepositoryImpl @Inject  constructor(
     override suspend fun getUser(): UserModel? {
         return try {
             vkApi.getProfile().fromVKUserToUserModel()
-        }catch (e: VKApiExecutionException){ null }
+        }catch (e: VKApiExecutionException){
+            Log.e("UserRepositoryImpl", e.message.toString())
+            null
+        }
     }
 
     override fun isUserAuthorized() =
