@@ -9,9 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.okei.store.domain.model.product.ProductModel
 import com.okei.store.domain.repos.CartRepository
 import com.okei.store.domain.repos.ProductRepository
+import com.okei.store.feature.common.model.Box
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,8 +38,9 @@ class ShopViewModel @Inject constructor(
     private val _query = mutableStateOf("Поиск товаров")
     val query: State<String> = _query
 
-    private val _displayProductInformation = mutableStateOf<ProductModel?>(null)
-    val displayProductInformation : State<ProductModel?> = _displayProductInformation
+    private val _displayProductInformation = Channel<Box<ProductModel>>()
+    val displayProductInformation : Flow<Box<ProductModel>>
+        get() = _displayProductInformation.receiveAsFlow()
     init {
         load()
     }
@@ -105,10 +110,9 @@ class ShopViewModel @Inject constructor(
         }
     }
     fun showProductModel(productModel: ProductModel){
-        _displayProductInformation.value = productModel
-    }
-    fun closeProductModel(){
-        _displayProductInformation.value = null
+        viewModelScope.launch {
+            _displayProductInformation.send(Box(productModel))
+        }
     }
 
     fun addProductInCart(id: String, quantity: Int = 1){

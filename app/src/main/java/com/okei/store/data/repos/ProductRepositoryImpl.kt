@@ -1,12 +1,15 @@
 package com.okei.store.data.repos
 
 import com.okei.store.R
+import com.okei.store.data.data_source.api.server.ProductApi
 import com.okei.store.domain.model.product.ProductModel
 import com.okei.store.domain.repos.ProductRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
-class ProductRepositoryImpl @Inject constructor() : ProductRepository {
+class ProductRepositoryImpl @Inject constructor(
+    private val productApi: ProductApi,
+) : ProductRepository {
     override suspend fun getProducts(): List<ProductModel> {
         delay(1_000L)
         return listOf(

@@ -10,4 +10,5 @@
     <string name="sum">Сумма</string>
     <string name="to_come_in">Войти</string>
     <string name="error_has_occurred">Произошла ошибка</string>
+    <string name="lack_of_access_to_internet">Отсутствие доступа к Интернету</string>
 </resources>

@@ -50,14 +50,18 @@ fun ProductInformationView(
                 .fillMaxWidth(0.775f)
                 .padding(horizontal = 20.dp)
         )
-        val pagerState = rememberPagerState()
+        val pagerState = rememberPagerState(
+            initialPage = 0,
+            initialPageOffsetFraction = 0f
+        ){
+            productModel.listImageUrl.size
+        }
         BoxWithConstraints(
             modifier = Modifier.fillMaxWidth()
         ) {
             val width = 230.dp
             val height = 250.dp
             HorizontalPager(
-                pageCount = productModel.listImageUrl.size,
                 state = pagerState,
                 pageSize = PageSize.Fixed(width),
                 pageSpacing = 24.dp,

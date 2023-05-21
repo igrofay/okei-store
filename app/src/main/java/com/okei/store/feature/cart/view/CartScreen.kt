@@ -1,14 +1,15 @@
 package com.okei.store.feature.cart.view
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,40 +17,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import com.okei.store.R
+import com.okei.store.feature.app.view.collectSideEffect
 import com.okei.store.feature.cart.model.CartViewModel
 import com.okei.store.feature.common.product.ProductInformationView
-import com.okei.store.feature.nav.view.LocalBottomSheetManager
+import com.okei.store.feature.nav.view.SheetContent
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun CartScreen(
     viewModel: CartViewModel = hiltViewModel(),
     createOrder: ()->Unit,
+    showBottomSheet: (SheetContent) -> Unit,
+    hideBottomSheet: ()-> Unit,
 ) {
-    val bottomSheetManager = LocalBottomSheetManager.current
-    val displayProductInformation by viewModel.displayProductInformation
-    bottomSheetManager.collectAsState {
-        if (it == SheetValue.Hidden) {
-            viewModel.closeProductModel()
-            bottomSheetManager.onClose()
+    LaunchedEffect(isSystemInDarkTheme() ){
+        hideBottomSheet.invoke()
+    }
+    viewModel.displayProductInformation.collectSideEffect{box ->
+        val productModel = box.value
+        showBottomSheet.invoke {
+            ProductInformationView(productModel,
+                isAddedToCart = viewModel.cart.contains(productModel.id),
+                quantityInCart = viewModel.cart.getOrDefault(productModel.id, 0),
+                minus = { viewModel.removeProductInCart(productModel.id) },
+                plus = { viewModel.addProductInCart(productModel.id) }
+            )
         }
     }
-    LaunchedEffect(displayProductInformation){
-        displayProductInformation?.let { productModel->
-            bottomSheetManager.show {
-                ProductInformationView(
-                    productModel = productModel,
-                    isAddedToCart = viewModel.cart.contains(productModel.id),
-                    quantityInCart = viewModel.cart.getOrDefault(productModel.id, 0),
-                    minus = { viewModel.removeProductInCart(productModel.id) },
-                    plus = { viewModel.addProductInCart(productModel.id) }
-                )
-            }
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()

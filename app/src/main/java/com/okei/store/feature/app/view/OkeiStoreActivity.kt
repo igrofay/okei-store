@@ -1,9 +1,6 @@
 package com.okei.store.feature.app.view
 
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.Secure
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher

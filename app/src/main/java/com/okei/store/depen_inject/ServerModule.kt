@@ -2,6 +2,7 @@ package com.okei.store.depen_inject
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.okei.store.data.data_source.api.server.AuthApi
+import com.okei.store.data.data_source.api.server.ProductApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +15,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ServerModule {
-    private const val ServerUrl = "http://192.168.101.91/"
+    private const val ServerUrl = "https://a49a-95-183-16-18.ngrok-free.app"
     private val contentType = "application/json".toMediaType()
 
     @Provides
@@ -28,4 +29,9 @@ object ServerModule {
         retrofit: Retrofit
     ): AuthApi = retrofit
         .create(AuthApi::class.java)
+    @Provides
+    fun provideProductApi(
+        retrofit: Retrofit
+    ): ProductApi = retrofit
+        .create(ProductApi::class.java)
 }
