@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,6 +35,7 @@ fun CartScreen(
     LaunchedEffect(isSystemInDarkTheme() ){
         hideBottomSheet.invoke()
     }
+    val cart by viewModel.cart
     viewModel.displayProductInformation.collectSideEffect{box ->
         val productModel = box.value
         showBottomSheet.invoke {
@@ -73,9 +75,9 @@ fun CartScreen(
                 .weight(1f),
             contentPadding = PaddingValues(vertical = 14.dp)
         ) {
-            items(viewModel.listProduct){
+            items(cart.setProductQuantity.toList()){ productQuantity->
                 ItemCartView(
-                    productModel = it,
+                    productModel = productQuantity.product,
                     isAddedToCart = viewModel.cart.contains(it.id),
                     quantityInCart = viewModel.cart.getOrDefault(it.id, 0),
                     minus = { viewModel.removeProductInCart(it.id) },
@@ -99,7 +101,7 @@ fun CartScreen(
                 fontWeight = FontWeight.W600,
             )
             Text(
-                text ="${viewModel.sum.value} ₽",
+                text ="${cart.sum} ₽",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W600,
             )
@@ -109,7 +111,7 @@ fun CartScreen(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 24.dp)
                 .fillMaxWidth(),
-            enabled = viewModel.sum.value > 0
+            enabled = cart.sum > 0
         ) {
             Text(
                 text = stringResource(id = R.string.proceed_to_checkout),

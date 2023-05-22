@@ -3,6 +3,7 @@ package com.okei.store.data.repos
 import android.util.Log
 import com.okei.store.data.data_source.api.vk.VKApi
 import com.okei.store.data.data_source.database.UserDatabase
+import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.error.ProfileError
 import com.okei.store.domain.model.user.UserModel
 import com.okei.store.domain.repos.UserRepository
@@ -38,7 +39,7 @@ class UserRepositoryImpl @Inject constructor(
         }catch (e: JSONException){
             throw ProfileError.JsonProcessingError
         }catch (e: UnknownHostException){
-            throw ProfileError.NoNetworkAccess
+            throw AppError.NoNetworkAccess
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.okei.store.R
+import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.error.ProfileError
 import com.okei.store.domain.model.user.UserModel
 import com.okei.store.domain.repos.UserRepository
@@ -58,11 +59,10 @@ class ProfileViewModel @Inject constructor(
                                 exitUseCase.execute()
                                 _sideEffect.send(ProfileSideEffect.Message(R.string.error_has_occurred))
                             }
-
                             ProfileError.JsonProcessingError -> {
                                 _sideEffect.send(ProfileSideEffect.Message(R.string.error_has_occurred))
                             }
-                            ProfileError.NoNetworkAccess->{
+                            AppError.NoNetworkAccess->{
                                 _sideEffect.send(ProfileSideEffect.Message(R.string.lack_of_access_to_internet))
                             }
                         }

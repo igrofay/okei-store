@@ -3,15 +3,22 @@ package com.okei.store.feature.shop.view
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.okei.store.feature.app.view.collectSideEffect
 import com.okei.store.feature.common.product.ProductInformationView
 import com.okei.store.feature.nav.view.SheetContent
+import com.okei.store.feature.shop.model.ShopSideEffect
 import com.okei.store.feature.shop.model.ShopViewModel
 
 @Composable
@@ -23,22 +30,36 @@ fun ShopScreen(
     LaunchedEffect(isSystemInDarkTheme() ){
         hideBottomSheet.invoke()
     }
-    viewModel.displayProductInformation.collectSideEffect{ box ->
-        val productModel = box.value
-        showBottomSheet.invoke {
-            ProductInformationView(productModel,
-                isAddedToCart = viewModel.cart.contains(productModel.id),
-                quantityInCart = viewModel.cart.getOrDefault(productModel.id, 0),
-                minus = { viewModel.removeProductInCart(productModel.id) },
-                plus = { viewModel.addProductInCart(productModel.id) }
-            )
+    LaunchedEffect(viewModel){
+        viewModel.refresh()
+    }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val res = LocalContext.current.resources
+    viewModel.sideEffect.collectSideEffect{ sideEffect ->
+        when(sideEffect){
+            is ShopSideEffect.Message -> snackbarHostState
+                .showSnackbar(res.getString(sideEffect.stringRes))
+            is ShopSideEffect.ProductInformation -> showBottomSheet.invoke {
+                ProductInformationView(sideEffect.product,
+                    isAddedToCart = viewModel.cart.contains(sideEffect.product.id),
+                    quantityInCart = viewModel.cart.getOrDefault(sideEffect.product.id, 0),
+                    minus = { viewModel.removeProductInCart(sideEffect.product.id) },
+                    plus = { viewModel.addProductInCart(sideEffect.product.id) }
+                )
+            }
         }
     }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        snackbarHost ={
+            SnackbarHost(snackbarHostState)
+        }
     ) {
-        SearchProductView(viewModel)
-        ListProductView(viewModel)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SearchProductView(viewModel)
+            ListProductView(viewModel)
+        }
     }
 }

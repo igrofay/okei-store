@@ -6,14 +6,14 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.okei.store.R
+import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.product.ProductModel
 import com.okei.store.domain.repos.CartRepository
-import com.okei.store.domain.repos.ProductRepository
-import com.okei.store.feature.common.model.Box
+import com.okei.store.domain.use_case.product.GetProductUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShopViewModel @Inject constructor(
-    private val productRepos : ProductRepository,
+    private val getProductUseCase: GetProductUseCase,
     private val cartRepository: CartRepository,
 ) : ViewModel(){
     private val _listProduct = mutableStateListOf<ProductModel>()
@@ -38,9 +38,10 @@ class ShopViewModel @Inject constructor(
     private val _query = mutableStateOf("Поиск товаров")
     val query: State<String> = _query
 
-    private val _displayProductInformation = Channel<Box<ProductModel>>()
-    val displayProductInformation : Flow<Box<ProductModel>>
-        get() = _displayProductInformation.receiveAsFlow()
+    private val _sideEffect = Channel<ShopSideEffect>()
+    val sideEffect : Flow<ShopSideEffect>
+        get() = _sideEffect.receiveAsFlow()
+
     init {
         load()
     }
@@ -56,11 +57,19 @@ class ShopViewModel @Inject constructor(
     }
     private fun load(){
         viewModelScope.launch {
-            val list = productRepos.getProducts()
-            if(listProduct != list){
-                _listProduct.clear()
-                _listProduct.addAll(list)
-            }
+            getProductUseCase.execute()
+                .onSuccess { list->
+                    if(listProduct != list){
+                        _listProduct.clear()
+                        _listProduct.addAll(list)
+                    }
+                }.onFailure {
+                    when(it){
+                        AppError.NoNetworkAccess -> _sideEffect.send(
+                            ShopSideEffect.Message(R.string.lack_of_access_to_internet)
+                        )
+                    }
+                }
             _isRefreshing.value = false
         }
     }
@@ -90,28 +99,28 @@ class ShopViewModel @Inject constructor(
         }else{
             searchJob?.cancel()
             searchJob = viewModelScope.launch {
-                delay(500)
-                _foundProducts.clear()
-                val list = productRepos.getProducts().filter {
-                    it.name.contains(text) or it.description.contains(text)
-                }
-                _foundProducts.addAll(list)
+//                delay(500)
+//                _foundProducts.clear()
+//                val list = productRepos.getProducts().filter {
+//                    it.name.contains(text) or it.description.contains(text)
+//                }
+//                _foundProducts.addAll(list)
             }
         }
     }
     fun search(text: String){
         searchJob?.cancel()
         searchJob = viewModelScope.launch{
-            _foundProducts.clear()
-            val list = productRepos.getProducts().filter {
-                it.name.contains(text) or it.description.contains(text)
-            }
-            _foundProducts.addAll(list)
+//            _foundProducts.clear()
+//            val list = productRepos.getProducts().filter {
+//                it.name.contains(text) or it.description.contains(text)
+//            }
+//            _foundProducts.addAll(list)
         }
     }
     fun showProductModel(productModel: ProductModel){
         viewModelScope.launch {
-            _displayProductInformation.send(Box(productModel))
+            _sideEffect.send(ShopSideEffect.ProductInformation(productModel))
         }
     }
 
