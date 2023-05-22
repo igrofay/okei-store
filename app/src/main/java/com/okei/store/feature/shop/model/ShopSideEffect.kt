@@ -5,5 +5,5 @@ import com.okei.store.domain.model.product.ProductModel
 
 sealed class ShopSideEffect {
     class Message(@StringRes val stringRes: Int) : ShopSideEffect()
-    class ProductInformation(val product: ProductModel) : ShopSideEffect()
+    class ProductInformation(val id: String) : ShopSideEffect()
 }

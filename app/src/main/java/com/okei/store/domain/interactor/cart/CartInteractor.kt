@@ -1,4 +1,4 @@
-package com.okei.store.domain.iterator.cart
+package com.okei.store.domain.interactor.cart
 
 import com.okei.store.domain.model.cart.CartWithData
 import com.okei.store.domain.model.cart.ProductQuantity
@@ -7,6 +7,7 @@ import com.okei.store.domain.repos.CartRepository
 import com.okei.store.domain.repos.ProductRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -14,18 +15,17 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class CartIterator @Inject constructor(
+class CartInteractor @Inject constructor(
     private val cartRepository: CartRepository,
     private val productRepository: ProductRepository,
 ) {
     private val coroutine = CoroutineScope(Dispatchers.Default)
-    private val flowProducts = flow<List<ProductModel>> {
+    private val flowProducts = flow {
         while (true){
             runCatching {
                 productRepository.getProducts()
             }.onSuccess {products->
-                catalog.clear()
-                catalog.addAll(products)
+                emit(products)
             }
             delay(5_000)
         }
@@ -36,9 +36,13 @@ class CartIterator @Inject constructor(
     private val catalog: MutableList<ProductModel> = mutableListOf()
 
 
-    fun subscribe() = combine(cartRepository.getCart(), flowProducts, ::transformation)
+    fun subscribeCartWithData(onValueChange: (CartWithData)->Unit) : Job{
+        return coroutine.launch {
+            combine(cartRepository.getCart(), flowProducts, ::transformationCartWithData).collect(onValueChange)
+        }
+    }
 
-    private fun transformation(
+    private fun transformationCartWithData(
         map: Map<String, Int>,
         list: List<ProductModel>
     ) : CartWithData{

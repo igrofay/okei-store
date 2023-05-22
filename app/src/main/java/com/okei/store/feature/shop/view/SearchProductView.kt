@@ -68,7 +68,7 @@ fun SearchProductView(
         ) {
             items(viewModel.foundProducts) {
                 ItemFoundProduct(productModel = it) {
-                    viewModel.showProductModel(it)
+                    viewModel.showProductModel(it.id)
                 }
                 Divider()
             }

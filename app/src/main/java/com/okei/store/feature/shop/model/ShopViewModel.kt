@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.okei.store.R
+import com.okei.store.domain.interactor.cart.CartInteractor
 import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.product.ProductModel
 import com.okei.store.domain.repos.CartRepository
@@ -14,6 +15,7 @@ import com.okei.store.domain.use_case.product.GetProductUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -54,6 +56,14 @@ class ShopViewModel @Inject constructor(
             _cart.clear()
             _cart.putAll(it)
         }
+    }
+
+    fun getProduct(id: String) : ProductModel?{
+        for (item in listProduct){
+            if (item.id == id)
+                return item
+        }
+        return null
     }
     private fun load(){
         viewModelScope.launch {
@@ -97,30 +107,33 @@ class ShopViewModel @Inject constructor(
         if (text.isBlank()){
             _foundProducts.clear()
         }else{
-            searchJob?.cancel()
-            searchJob = viewModelScope.launch {
-//                delay(500)
-//                _foundProducts.clear()
-//                val list = productRepos.getProducts().filter {
-//                    it.name.contains(text) or it.description.contains(text)
-//                }
-//                _foundProducts.addAll(list)
-            }
+            search(text, 500L)
         }
     }
-    fun search(text: String){
+    fun search(text: String, delayMilliseconds: Long = 0){
         searchJob?.cancel()
-        searchJob = viewModelScope.launch{
-//            _foundProducts.clear()
-//            val list = productRepos.getProducts().filter {
-//                it.name.contains(text) or it.description.contains(text)
-//            }
-//            _foundProducts.addAll(list)
+        searchJob = viewModelScope.launch {
+            delay(delayMilliseconds)
+            _foundProducts.clear()
+            getProductUseCase.execute()
+                .onSuccess {list->
+                    val products = list.filter {
+                        it.name.contains(text) or it.description.contains(text)
+                    }
+                    _foundProducts
+                        .addAll(products)
+                }.onFailure {
+                    when(it){
+                        AppError.NoNetworkAccess -> _sideEffect.send(
+                            ShopSideEffect.Message(R.string.lack_of_access_to_internet)
+                        )
+                    }
+                }
         }
     }
-    fun showProductModel(productModel: ProductModel){
+    fun showProductModel(id: String){
         viewModelScope.launch {
-            _sideEffect.send(ShopSideEffect.ProductInformation(productModel))
+            _sideEffect.send(ShopSideEffect.ProductInformation(id))
         }
     }
 

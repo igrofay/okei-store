@@ -1,5 +1,6 @@
 package com.okei.store.feature.shop.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import com.okei.store.feature.nav.view.SheetContent
 import com.okei.store.feature.shop.model.ShopSideEffect
 import com.okei.store.feature.shop.model.ShopViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ShopScreen(
     viewModel: ShopViewModel = hiltViewModel(),
@@ -40,11 +42,15 @@ fun ShopScreen(
             is ShopSideEffect.Message -> snackbarHostState
                 .showSnackbar(res.getString(sideEffect.stringRes))
             is ShopSideEffect.ProductInformation -> showBottomSheet.invoke {
-                ProductInformationView(sideEffect.product,
-                    isAddedToCart = viewModel.cart.contains(sideEffect.product.id),
-                    quantityInCart = viewModel.cart.getOrDefault(sideEffect.product.id, 0),
-                    minus = { viewModel.removeProductInCart(sideEffect.product.id) },
-                    plus = { viewModel.addProductInCart(sideEffect.product.id) }
+                val product = remember(viewModel.listProduct) {
+                    viewModel.getProduct(sideEffect.id)
+                } ?: return@invoke hideBottomSheet.invoke()
+                ProductInformationView(
+                    productModel = product,
+                    isAddedToCart = viewModel.cart.contains(sideEffect.id),
+                    quantityInCart = viewModel.cart.getOrDefault(sideEffect.id, 0),
+                    minus = { viewModel.removeProductInCart(sideEffect.id) },
+                    plus = { viewModel.addProductInCart(sideEffect.id) }
                 )
             }
         }

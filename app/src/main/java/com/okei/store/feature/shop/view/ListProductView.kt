@@ -58,7 +58,7 @@ fun ListProductView(viewModel: ShopViewModel) {
                     minus = {viewModel.removeProductInCart(it.id)},
                     plus = {viewModel.addProductInCart(it.id)}
                 ) {
-                    viewModel.showProductModel(it)
+                    viewModel.showProductModel(it.id)
                 }
             }
         }

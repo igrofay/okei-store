@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.okei.store.R
+import com.okei.store.domain.model.cart.ProductQuantity
 import com.okei.store.feature.app.view.collectSideEffect
 import com.okei.store.feature.cart.model.CartViewModel
 import com.okei.store.feature.common.product.ProductInformationView
@@ -37,13 +39,16 @@ fun CartScreen(
     }
     val cart by viewModel.cart
     viewModel.displayProductInformation.collectSideEffect{box ->
-        val productModel = box.value
         showBottomSheet.invoke {
-            ProductInformationView(productModel,
-                isAddedToCart = viewModel.cart.contains(productModel.id),
-                quantityInCart = viewModel.cart.getOrDefault(productModel.id, 0),
-                minus = { viewModel.removeProductInCart(productModel.id) },
-                plus = { viewModel.addProductInCart(productModel.id) }
+            val productQuantity = remember(cart){
+                cart.get(box.value)
+            } ?: return@invoke hideBottomSheet.invoke()
+            ProductInformationView(
+                productModel= productQuantity.product,
+                isAddedToCart = cart.contains(box.value),
+                quantityInCart = productQuantity.amount,
+                minus = { viewModel.removeProductInCart(productQuantity.product.id) },
+                plus = { viewModel.addProductInCart(productQuantity.product.id) }
             )
         }
     }
@@ -77,13 +82,13 @@ fun CartScreen(
         ) {
             items(cart.setProductQuantity.toList()){ productQuantity->
                 ItemCartView(
-                    productModel = productQuantity.product,
-                    isAddedToCart = viewModel.cart.contains(it.id),
-                    quantityInCart = viewModel.cart.getOrDefault(it.id, 0),
-                    minus = { viewModel.removeProductInCart(it.id) },
-                    plus = { viewModel.addProductInCart(it.id) }
+                    productModel =  productQuantity.product,
+                    isAddedToCart = cart.contains(productQuantity.product.id),
+                    quantityInCart =  productQuantity.amount,
+                    minus = { viewModel.removeProductInCart(productQuantity.product.id) },
+                    plus = { viewModel.addProductInCart(productQuantity.product.id) }
                 ) {
-                    viewModel.showProductModel(it)
+                    viewModel.showProductModel(productQuantity.product.id)
                 }
                 Divider()
             }
