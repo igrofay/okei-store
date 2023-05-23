@@ -1,5 +1,6 @@
 package com.okei.store.feature.app.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class OkeiStoreActivity : ComponentActivity() {
     private val okeiStoreVM : OkeiStoreVM by viewModels()
     private lateinit var vkAuthLauncher : ActivityResultLauncher<Collection<VKScope>>
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vkAuthLauncher = VK.login(this, okeiStoreVM::vkAuthenticationResult)

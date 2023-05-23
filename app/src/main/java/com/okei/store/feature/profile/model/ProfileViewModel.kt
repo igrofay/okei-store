@@ -93,6 +93,7 @@ class ProfileViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        _sideEffect.close()
         userStateNotification.remove(id)
     }
 }
