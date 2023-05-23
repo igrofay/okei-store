@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.okei.store.feature.nav.model.AppRouting
+import com.okei.store.feature.ordering.view.OrderingScreen
 
 
 @Composable
@@ -25,7 +26,7 @@ fun AppNav() {
 
         }
         composable(AppRouting.Ordering.route){
-
+            OrderingScreen()
         }
     }
 }
