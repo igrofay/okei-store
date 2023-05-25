@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.okei.store.R
+import com.okei.store.domain.model.order.PaymentType
 import com.okei.store.domain.repos.UserRepository
 import com.okei.store.feature.app.model.CheckingPermissions
 import com.okei.store.feature.common.model.UserStateNotification
@@ -33,6 +34,9 @@ class OrderingViewModel @Inject constructor(
     val distance : State<Double?> = _distance
     val sideEffect : Flow<OrderingSideEffect>
         get() = _sideEffect.receiveAsFlow()
+    private val _paymentType = mutableStateOf(PaymentType.Cash)
+    val paymentType : State<PaymentType> = _paymentType
+
     init {
         userStateNotification.add(id, this)
         subscribeToDistance()

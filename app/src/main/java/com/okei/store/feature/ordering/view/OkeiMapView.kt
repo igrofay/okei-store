@@ -58,7 +58,7 @@ fun OkeiMapView(
                 Column{
                     Text(
                         text = stringResource(R.string.ul_сhkalova_11),
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                     )
                     Text(
                         text = stringResource(R.string.orenburg),

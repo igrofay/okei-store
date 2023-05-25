@@ -16,4 +16,9 @@
     <string name="ul_сhkalova_11">ул. Чкалова, 11</string>
     <string name="orenburg">Оренбург</string>
     <string name="km">км</string>
+    <string name="here_you_can_pick_up_your_order">Здесь вы можете забрать свой заказ</string>
+    <string name="order_can_be_picked_up">Заказы можно забрать в любое время с 9:00 до 17:00. В любой день недели, кроме субботы и воскресенья</string>
+    <string name="cash">Наличный расчет</string>
+    <string name="select_payment_method">Выберите метод оплаты</string>
+    <string name="place_an_order">Оформить заказ</string>
 </resources>
