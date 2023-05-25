@@ -1,4 +1,4 @@
-package com.okei.store.feature.profile.view
+package com.okei.store.feature.common.view.button
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement

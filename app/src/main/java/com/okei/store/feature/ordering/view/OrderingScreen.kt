@@ -1,6 +1,9 @@
 package com.okei.store.feature.ordering.view
 
+import android.Manifest
 import android.annotation.SuppressLint
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +27,14 @@ import com.okei.store.feature.ordering.model.OrderingViewModel
 fun OrderingScreen(
     viewModel: OrderingViewModel = hiltViewModel(),
 ) {
+    val requestPermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+            if (it){
+                viewModel.subscribeToDistance()
+            }
+        }
+    )
     val state by viewModel.state
     val snackbarHostState = remember { SnackbarHostState() }
     val res = LocalContext.current.resources
@@ -32,6 +43,10 @@ fun OrderingScreen(
             is OrderingSideEffect.Message -> snackbarHostState.showSnackbar(
                 res.getString(sideEffect.stringRes)
             )
+            OrderingSideEffect.RequestAccessToLocation -> {
+                requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                requestPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
         }
     }
     Scaffold(
@@ -48,7 +63,7 @@ fun OrderingScreen(
                 CircularProgressIndicator()
             }
             OrderingState.NeedToSignIn -> LoginAccount()
-            OrderingState.OrderingData -> OrderDetails()
+            OrderingState.OrderingData -> OrderDetails(viewModel)
         }
     }
 }

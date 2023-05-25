@@ -1,4 +1,4 @@
-package com.okei.store.feature.common.theme
+package com.okei.store.feature.common.view.theme
 
 import android.app.Activity
 import android.os.Build

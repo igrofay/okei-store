@@ -12,7 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.okei.store.feature.app.model.OkeiStoreVM
-import com.okei.store.feature.common.theme.OkeiStoreTheme
+import com.okei.store.feature.common.view.theme.OkeiStoreTheme
 import com.okei.store.feature.nav.view.AppNav
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKScope

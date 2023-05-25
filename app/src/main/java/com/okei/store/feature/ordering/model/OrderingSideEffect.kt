@@ -4,4 +4,5 @@ import androidx.annotation.StringRes
 
 sealed class OrderingSideEffect{
     class Message(@StringRes val stringRes: Int) : OrderingSideEffect()
+    object RequestAccessToLocation : OrderingSideEffect()
 }

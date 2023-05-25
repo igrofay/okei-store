@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.okei.store.feature.app.view.collectSideEffect
-import com.okei.store.feature.common.product.ProductInformationView
+import com.okei.store.feature.common.view.product.ProductInformationView
 import com.okei.store.feature.nav.view.SheetContent
 import com.okei.store.feature.shop.model.ShopSideEffect
 import com.okei.store.feature.shop.model.ShopViewModel

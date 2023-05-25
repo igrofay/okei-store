@@ -1,4 +1,4 @@
-package com.okei.store.feature.common.product
+package com.okei.store.feature.common.view.product
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*

@@ -23,7 +23,7 @@ import com.okei.store.R
 import com.okei.store.domain.model.cart.ProductQuantity
 import com.okei.store.feature.app.view.collectSideEffect
 import com.okei.store.feature.cart.model.CartViewModel
-import com.okei.store.feature.common.product.ProductInformationView
+import com.okei.store.feature.common.view.product.ProductInformationView
 import com.okei.store.feature.nav.view.SheetContent
 
 
@@ -116,7 +116,7 @@ fun CartScreen(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 24.dp)
                 .fillMaxWidth(),
-            enabled = cart.sum > 0
+            enabled = cart.sum >= 0
         ) {
             Text(
                 text = stringResource(id = R.string.proceed_to_checkout),
