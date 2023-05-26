@@ -23,4 +23,6 @@
     <string name="place_an_order">Оформить заказ</string>
     <string name="there_are_not_so_many_products_in_stock">На складе нет такого количества продуктов</string>
     <string name="order_created">Заказ создан</string>
+    <string name="order_for_amount">Заказ на сумму</string>
+    <string name="order_code">Код заказа</string>
 </resources>

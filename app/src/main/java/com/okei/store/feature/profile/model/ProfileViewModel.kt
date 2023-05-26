@@ -12,6 +12,7 @@ import com.okei.store.domain.model.order.OrderModel
 import com.okei.store.domain.model.user.UserModel
 import com.okei.store.domain.repos.UserRepository
 import com.okei.store.domain.use_case.auth.ExitUseCase
+import com.okei.store.domain.use_case.order.GetOrdersUseCase
 import com.okei.store.domain.use_case.profile.GetProfileUseCase
 import com.okei.store.feature.common.model.UserStateNotification
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ class ProfileViewModel @Inject constructor(
     private val userStateNotification: UserStateNotification,
     private val exitUseCase: ExitUseCase,
     private val getProfileUseCase: GetProfileUseCase,
+    private val getOrdersUseCase: GetOrdersUseCase,
 ) : ViewModel(), UserStateNotification.UserStateListener {
     private val _sideEffect = Channel<ProfileSideEffect>()
     val sideEffect: Flow<ProfileSideEffect>
@@ -62,6 +64,19 @@ class ProfileViewModel @Inject constructor(
                             ProfileError.JsonProcessingError -> {
                                 _sideEffect.send(ProfileSideEffect.Message(R.string.error_has_occurred))
                             }
+                            AppError.NoNetworkAccess->{
+                                _sideEffect.send(ProfileSideEffect.Message(R.string.lack_of_access_to_internet))
+                            }
+                        }
+                    }
+            }
+            viewModelScope.launch {
+                getOrdersUseCase.execute()
+                    .onSuccess {
+                        _listOrder.clear()
+                        _listOrder.addAll(it)
+                    }.onFailure {
+                        when(it){
                             AppError.NoNetworkAccess->{
                                 _sideEffect.send(ProfileSideEffect.Message(R.string.lack_of_access_to_internet))
                             }

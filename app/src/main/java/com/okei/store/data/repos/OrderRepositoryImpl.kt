@@ -6,6 +6,7 @@ import com.okei.store.data.model.CreateOrderBody.Companion.fromModelToCreateOrde
 import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.error.OrderError
 import com.okei.store.domain.model.order.CreateOrderModel
+import com.okei.store.domain.model.order.OrderModel
 import com.okei.store.domain.repos.OrderRepository
 import retrofit2.HttpException
 import java.io.IOException
@@ -16,9 +17,7 @@ class OrderRepositoryImpl @Inject constructor(
 ): OrderRepository {
     override suspend fun createOrder(createOrderModel: CreateOrderModel, token: String) {
         try {
-            Log.e("OrderRepositoryImpl", "1")
             orderApi.createOrder(createOrderModel.fromModelToCreateOrderBody(), "Bearer $token")
-            Log.e("OrderRepositoryImpl", "2")
         }catch (e: IOException){
             throw AppError.NoNetworkAccess
         }catch (e: HttpException){
@@ -27,6 +26,14 @@ class OrderRepositoryImpl @Inject constructor(
                 409 -> throw OrderError.AnOrderWithThisIdExists
                 else-> throw e
             }
+        }
+    }
+
+    override suspend fun getOrdersUser(token: String): List<OrderModel> {
+        try {
+            return orderApi.getOrders("Bearer $token")
+        }catch (e: IOException){
+            throw AppError.NoNetworkAccess
         }
     }
 }

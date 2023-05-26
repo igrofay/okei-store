@@ -38,13 +38,12 @@ fun ProfileUserView(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp)
             ){
                 Text(
                     text = stringResource(id = R.string.orders),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.W600,
-                    modifier = Modifier.padding(vertical = 20.dp)
+                    modifier = Modifier.padding(20.dp)
                 )
                 ListOrderView(viewModel.listOrder)
             }
