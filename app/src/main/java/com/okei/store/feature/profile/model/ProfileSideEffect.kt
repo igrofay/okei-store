@@ -1,4 +1,4 @@
-package com.okei.store.feature.cart.model
+package com.okei.store.feature.profile.model
 
 import androidx.annotation.StringRes
 

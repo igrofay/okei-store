@@ -1,17 +1,17 @@
 package com.okei.store.feature.ordering.model
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.okei.store.R
+import com.okei.store.domain.model.error.AppError
+import com.okei.store.domain.model.error.OrderError
 import com.okei.store.domain.model.order.PaymentType
 import com.okei.store.domain.repos.UserRepository
+import com.okei.store.domain.use_case.order.CreateOrderUseCase
 import com.okei.store.feature.app.model.CheckingPermissions
+import com.okei.store.feature.common.model.CreateOrderNotification
 import com.okei.store.feature.common.model.UserStateNotification
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -26,6 +26,8 @@ class OrderingViewModel @Inject constructor(
     private val userStateNotification: UserStateNotification,
     private val locationClient: LocationClient,
     private val checkingPermissions: CheckingPermissions,
+    private val createOrderUseCase: CreateOrderUseCase,
+    private val createOrderNotification: CreateOrderNotification,
 ): ViewModel(), UserStateNotification.UserStateListener {
     private val _state = mutableStateOf(OrderingState.OrderingData)
     val state: State<OrderingState> = _state
@@ -36,14 +38,16 @@ class OrderingViewModel @Inject constructor(
         get() = _sideEffect.receiveAsFlow()
     private val _paymentType = mutableStateOf(PaymentType.Cash)
     val paymentType : State<PaymentType> = _paymentType
-
+    private val _isCreating = mutableStateOf(false)
+    val isCreating : State<Boolean> = _isCreating
     init {
         userStateNotification.add(id, this)
         subscribeToDistance()
+        initState()
     }
     override fun onStateChange(state: UserStateNotification.State) {
         when (state) {
-            UserStateNotification.State.Authorized -> loadOrder()
+            UserStateNotification.State.Authorized -> initState()
             UserStateNotification.State.NoLongerAuthorized -> {
                 _state.value = OrderingState.NeedToSignIn
             }
@@ -55,9 +59,9 @@ class OrderingViewModel @Inject constructor(
     companion object{
         private const val id = "OrderingViewModel"
     }
-    private fun loadOrder(){
+    private fun initState(){
         if (userRepository.isUserAuthorized()){
-
+            _state.value = OrderingState.OrderingData
         }else{
             _state.value = OrderingState.NeedToSignIn
         }
@@ -80,5 +84,34 @@ class OrderingViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         userStateNotification.remove(id)
+    }
+    fun createOrder() {
+        _isCreating.value = true
+        viewModelScope.launch {
+            createOrderUseCase.execute(_paymentType.value)
+                .onSuccess {
+                    createOrderNotification.notifyAboutCreatedProduct()
+                    _sideEffect.send(OrderingSideEffect.CreatedOrder)
+                }.onFailure {
+                    when(it){
+                        OrderError.AnOrderWithThisIdExists-> createOrder()
+                        OrderError.RequiredProductDoesNotExistOrIsNotAvailableInThatQuantity ->{
+                            viewModelScope.launch {
+                                _sideEffect.send(
+                                    OrderingSideEffect.Message(R.string.there_are_not_so_many_products_in_stock)
+                                )
+                            }
+                            _isCreating.value = false
+                        }
+                        AppError.NoNetworkAccess -> {
+                            _sideEffect.send(
+                                OrderingSideEffect.Message(R.string.lack_of_access_to_internet)
+                            )
+                            _isCreating.value = false
+                        }
+                        else-> _isCreating.value = false
+                    }
+                }
+        }
     }
 }

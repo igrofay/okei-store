@@ -3,11 +3,13 @@ package com.okei.store.depen_inject
 import com.okei.store.data.repos.AppRepositoryImpl
 import com.okei.store.data.repos.AuthRepositoryImpl
 import com.okei.store.data.repos.CartRepositoryImpl
+import com.okei.store.data.repos.OrderRepositoryImpl
 import com.okei.store.data.repos.ProductRepositoryImpl
 import com.okei.store.data.repos.UserRepositoryImpl
 import com.okei.store.domain.repos.AppRepository
 import com.okei.store.domain.repos.AuthRepository
 import com.okei.store.domain.repos.CartRepository
+import com.okei.store.domain.repos.OrderRepository
 import com.okei.store.domain.repos.ProductRepository
 import com.okei.store.domain.repos.UserRepository
 import dagger.Binds
@@ -40,4 +42,9 @@ abstract class RepositoryModule {
     abstract fun bindAppRepository(
         appRepositoryImpl: AppRepositoryImpl
     ): AppRepository
+
+    @Binds
+    abstract fun bindOrderRepository(
+        orderRepositoryImpl : OrderRepositoryImpl
+    ) : OrderRepository
 }

@@ -46,6 +46,7 @@ fun ProfileUserView(
                     fontWeight = FontWeight.W600,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
+                ListOrderView(viewModel.listOrder)
             }
         },
         peekHeight = 0.dp,

@@ -149,6 +149,7 @@ fun MainContentNav(
                     )
                 }
                 composable(MainContentRouting.Cart.route) {
+                    BackHandler(bottomSheetContent != null) {}
                     CartScreen(
                         createOrder = createOrder,
                         showBottomSheet = showBottomSheet,

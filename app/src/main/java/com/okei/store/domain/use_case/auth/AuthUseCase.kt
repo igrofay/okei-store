@@ -11,8 +11,8 @@ class AuthUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) {
     suspend fun execute(idUser: Long) = runCatching {
-//        val model = authRepository.authUser(idUser)
-//        appRepository.setAccessToken(model.accessToken)
+        val model = authRepository.authUser(idUser)
+        appRepository.setAccessToken(model.accessToken)
         userRepository.setUserIsAuth(true)
     }
 }

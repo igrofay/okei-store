@@ -26,6 +26,7 @@ import com.okei.store.feature.ordering.model.OrderingViewModel
 @Composable
 fun OrderingScreen(
     viewModel: OrderingViewModel = hiltViewModel(),
+    created: ()->Unit,
 ) {
     val requestPermission = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -47,6 +48,7 @@ fun OrderingScreen(
                 requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 requestPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
             }
+            OrderingSideEffect.CreatedOrder -> created()
         }
     }
     Scaffold(

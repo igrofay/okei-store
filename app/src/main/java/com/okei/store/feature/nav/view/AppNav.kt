@@ -22,11 +22,13 @@ fun AppNav() {
                 }
             )
         }
-        composable(AppRouting.AccountLogin.route){
-
-        }
+        composable(AppRouting.AccountLogin.route){}
         composable(AppRouting.Ordering.route){
-            OrderingScreen()
+            OrderingScreen(
+                created = {
+                    appController.popBackStack()
+                }
+            )
         }
     }
 }

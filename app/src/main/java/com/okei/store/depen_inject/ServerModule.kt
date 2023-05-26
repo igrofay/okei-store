@@ -3,6 +3,7 @@ package com.okei.store.depen_inject
 import android.util.Log
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.okei.store.data.data_source.api.server.AuthApi
+import com.okei.store.data.data_source.api.server.OrderApi
 import com.okei.store.data.data_source.api.server.ProductApi
 import dagger.Module
 import dagger.Provides
@@ -56,4 +57,9 @@ object ServerModule {
         retrofit: Retrofit
     ): ProductApi = retrofit
         .create(ProductApi::class.java)
+    @Provides
+    fun provideOrderApi(
+        retrofit: Retrofit,
+    ) : OrderApi = retrofit
+        .create(OrderApi::class.java)
 }

@@ -1,6 +1,7 @@
 package com.okei.store.feature.ordering.view
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +43,9 @@ fun OrderDetails(
             contentPadding = PaddingValues(
                 horizontal = 20.dp
             ),
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ){
             item {
@@ -83,18 +88,28 @@ fun OrderDetails(
                 }
             }
         }
-        Button(
-            onClick = {
-
-            },
+        Box(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 24.dp)
                 .fillMaxWidth(),
-        ) {
-            Text(
-                text = stringResource(id = R.string.place_an_order),
-                fontSize = 16.sp
-            )
+            contentAlignment = Alignment.Center
+        ){
+            if (viewModel.isCreating.value){
+                CircularProgressIndicator()
+            }else{
+                Button(
+                    onClick = {
+                        viewModel.createOrder()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.place_an_order),
+                        fontSize = 16.sp
+                    )
+                }
+            }
         }
+
     }
 }

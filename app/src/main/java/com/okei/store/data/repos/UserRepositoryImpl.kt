@@ -14,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.json.JSONException
+import java.io.IOException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -38,7 +39,7 @@ class UserRepositoryImpl @Inject constructor(
             throw ProfileError.VKApiError
         }catch (e: JSONException){
             throw ProfileError.JsonProcessingError
-        }catch (e: UnknownHostException){
+        }catch (e: IOException){
             throw AppError.NoNetworkAccess
         }
     }

@@ -6,6 +6,7 @@ import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.product.ProductModel
 import com.okei.store.domain.repos.ProductRepository
 import kotlinx.coroutines.delay
+import java.io.IOException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -15,7 +16,7 @@ class ProductRepositoryImpl @Inject constructor(
     override suspend fun getProducts(): List<ProductModel> {
         try {
             return productApi.getProducts()
-        }catch (e: UnknownHostException){
+        }catch (e: IOException){
             throw AppError.NoNetworkAccess
         }
 //        delay(1_000L)

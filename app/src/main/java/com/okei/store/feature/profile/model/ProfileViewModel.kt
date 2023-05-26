@@ -1,27 +1,24 @@
 package com.okei.store.feature.profile.model
 
-import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.okei.store.R
 import com.okei.store.domain.model.error.AppError
 import com.okei.store.domain.model.error.ProfileError
+import com.okei.store.domain.model.order.OrderModel
 import com.okei.store.domain.model.user.UserModel
 import com.okei.store.domain.repos.UserRepository
 import com.okei.store.domain.use_case.auth.ExitUseCase
 import com.okei.store.domain.use_case.profile.GetProfileUseCase
-import com.okei.store.feature.cart.model.ProfileSideEffect
 import com.okei.store.feature.common.model.UserStateNotification
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,13 +37,16 @@ class ProfileViewModel @Inject constructor(
     private val _state = mutableStateOf(UserState.Loading)
     val state: State<UserState> = _state
 
+    private val _listOrder = mutableStateListOf<OrderModel>()
+    val listOrder: List<OrderModel> = _listOrder
+
     init {
         userStateNotification.add(id, this)
     }
 
-    fun refresh() = loadUser()
+    fun refresh() = loadUserData()
 
-    private fun loadUser() {
+    private fun loadUserData() {
         if (userRepository.isUserAuthorized()) {
             viewModelScope.launch {
                 getProfileUseCase.execute()
@@ -79,7 +79,7 @@ class ProfileViewModel @Inject constructor(
 
     override fun onStateChange(state: UserStateNotification.State) {
         when (state) {
-            UserStateNotification.State.Authorized -> loadUser()
+            UserStateNotification.State.Authorized -> loadUserData()
             UserStateNotification.State.NoLongerAuthorized -> clear()
             UserStateNotification.State.ErrorHasOccurred -> viewModelScope.launch {
                 _sideEffect.send(ProfileSideEffect.Message(R.string.error_has_occurred))
